@@ -35,15 +35,24 @@ public class AddressUtils
         {
             try
             {
-                String rspStr = HttpUtils.sendGet(IP_URL, "ip=" + ip + "&json=true", Constants.GBK);
+                String url = IP_URL+
+                        "&ip="+ip+
+                        "&json=true";
+                String rspStr = HttpUtils.sendGet(url, Constants.GBK);
                 if (StringUtils.isEmpty(rspStr))
                 {
                     log.error("获取地理位置异常 {}", ip);
                     return UNKNOWN;
                 }
                 JSONObject obj = JSON.parseObject(rspStr);
-                String region = obj.getString("pro");
-                String city = obj.getString("city");
+                String region = null;
+                if (obj != null) {
+                    region = obj.getString("pro");
+                }
+                String city = null;
+                if (obj != null) {
+                    city = obj.getString("city");
+                }
                 return String.format("%s %s", region, city);
             }
             catch (Exception e)

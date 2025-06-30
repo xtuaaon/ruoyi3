@@ -69,13 +69,13 @@ spring:
     # redis 配置
     redis:
       # 地址
-      host: localhost
+      host: r-uf6i0bir0yu1wgtmy7pd.redis.rds.aliyuncs.com
       # 端口，默认为6379
       port: 6379
       # 数据库索引
       database: 0
       # 密码
-      password:
+      password: '!Xt292512123'
       # 连接超时时间
       timeout: 10s
       lettuce:
@@ -98,8 +98,8 @@ token:
   # 令牌有效期（默认30分钟）
   expireTime: 30
 
-# MyBatis配置
-mybatis:
+# MyBatis Plus配置
+mybatis-plus:
   # 搜索指定包别名
   typeAliasesPackage: com.ruoyi.**.domain
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
@@ -135,3 +135,7 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+wechat:
+  appId: wxfcc19746a71cdec8
+  appSecret: 7683b83b646e5bb44f72bafa40e2d05f

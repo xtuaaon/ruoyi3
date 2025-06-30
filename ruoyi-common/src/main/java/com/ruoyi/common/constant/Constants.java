@@ -115,6 +115,8 @@ public class Constants
      */
     public static final String JWT_USERID = "userid";
 
+    public static final String JWT_OPENID ="openid" ;
+
     /**
      * 用户名称
      */

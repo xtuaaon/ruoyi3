@@ -3,6 +3,9 @@ package com.ruoyi.system.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,7 @@ import com.ruoyi.system.service.ISysUserService;
  * @author ruoyi
  */
 @Service
-public class SysUserServiceImpl implements ISysUserService
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService
 {
     private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
@@ -114,6 +117,14 @@ public class SysUserServiceImpl implements ISysUserService
     public SysUser selectUserByUserName(String userName)
     {
         return userMapper.selectUserByUserName(userName);
+    }
+
+    @Override
+    public SysUser selectUserByOpenId(String openId)
+    {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getOpenId,openId);
+        return baseMapper.selectOne(queryWrapper);
     }
 
     /**

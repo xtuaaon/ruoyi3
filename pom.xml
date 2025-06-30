@@ -185,6 +185,13 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 微信小程序-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-app</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -195,6 +202,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-app</module>
     </modules>
     <packaging>pom</packaging>
 

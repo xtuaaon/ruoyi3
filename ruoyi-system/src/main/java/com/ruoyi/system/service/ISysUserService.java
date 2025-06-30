@@ -43,6 +43,15 @@ public interface ISysUserService
     public SysUser selectUserByUserName(String userName);
 
     /**
+     * 通过微信ID查询用户
+     *
+     * @param openId 微信ID
+     * @return 用户对象信息
+     */
+    SysUser selectUserByOpenId(String openId);
+
+
+    /**
      * 通过用户ID查询用户
      * 
      * @param userId 用户ID

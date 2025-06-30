@@ -2,6 +2,10 @@ package com.ruoyi.common.core.domain.entity;
 
 import java.util.Date;
 import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -23,7 +27,11 @@ public class SysUser extends BaseEntity
 
     /** 用户ID */
     @Excel(name = "用户序号", type = Type.EXPORT, cellType = ColumnType.NUMERIC, prompt = "用户编号")
+    @TableId(type = IdType.ASSIGN_ID)
     private Long userId;
+
+    @TableField(value = "open_id")
+    private String openId;
 
     /** 部门ID */
     @Excel(name = "部门编号", type = Type.IMPORT)
@@ -78,18 +86,23 @@ public class SysUser extends BaseEntity
         @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
         @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
+    @TableField(exist = false)
     private SysDept dept;
 
     /** 角色对象 */
+    @TableField(exist = false)
     private List<SysRole> roles;
 
     /** 角色组 */
+    @TableField(exist = false)
     private Long[] roleIds;
 
     /** 岗位组 */
+    @TableField(exist = false)
     private Long[] postIds;
 
     /** 角色ID */
+    @TableField(exist = false)
     private Long roleId;
 
     public SysUser()
@@ -105,6 +118,14 @@ public class SysUser extends BaseEntity
     public Long getUserId()
     {
         return userId;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     public void setUserId(Long userId)

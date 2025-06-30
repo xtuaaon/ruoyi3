@@ -54,6 +54,12 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+        <!-- 微信小程序-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-app</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

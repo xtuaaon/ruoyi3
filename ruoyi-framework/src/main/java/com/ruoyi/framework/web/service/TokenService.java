@@ -3,6 +3,8 @@ package com.ruoyi.framework.web.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,11 +126,24 @@ public class TokenService
         return createToken(claims);
     }
 
+    public String createWXToken(LoginUser loginUser)
+    {
+        log.info("loginUser:{}", JSON.toJSONString(loginUser));
+        String token = IdUtils.fastUUID();
+        loginUser.setToken(token);
+        setUserAgent(loginUser);
+        refreshToken(loginUser);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(Constants.LOGIN_USER_KEY, token);
+        claims.put(Constants.JWT_OPENID, loginUser.getOpenId());
+        return createToken(claims);
+    }
+
     /**
      * 验证令牌有效期，相差不足20分钟，自动刷新缓存
      * 
      * @param loginUser 登录信息
-     * @return 令牌
      */
     public void verifyToken(LoginUser loginUser)
     {
@@ -177,10 +192,9 @@ public class TokenService
      */
     private String createToken(Map<String, Object> claims)
     {
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
-        return token;
     }
 
     /**

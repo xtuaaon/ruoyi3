@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.app.mapper.WXAddressMapper">
+
+    <resultMap id="WXAddressResult" type="com.ruoyi.common.core.domain.entity.WXAddress">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="address_name" jdbcType="VARCHAR" property="addressName" />
+        <result column="detail_address" jdbcType="VARCHAR" property="detailAddress" />
+        <result column="location" jdbcType="VARCHAR" property="location" />
+        <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
+        <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+        <result column="order" jdbcType="INTEGER" property="order" />
+        <result column="creator" jdbcType="BIGINT" property="creator" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_SQL_List">
+        select id, address_name, detail_address, location, contact_name,
+        contact_phone, order from wx_address
+    </sql>
+
+</mapper>
