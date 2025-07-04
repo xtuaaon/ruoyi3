@@ -53,7 +53,6 @@ public class HttpUtils {
     public static String sendGet(String url, String param) {
         String urlWithParams = param.isEmpty() ? url : url + "?" + param;
         HttpGet httpGet = new HttpGet(urlWithParams);
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
         try{
             return httpClient.execute(httpGet, response -> {
@@ -70,7 +69,6 @@ public class HttpUtils {
 
     public static String sendPost(String url, Object data, String contentType) {
         HttpPost httpPost = new HttpPost(url);
-        httpPost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
         // 根据数据类型和contentType设置实体
         if (data instanceof String) {

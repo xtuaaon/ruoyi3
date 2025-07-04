@@ -139,3 +139,6 @@ xss:
 wechat:
   appId: wxfcc19746a71cdec8
   appSecret: 7683b83b646e5bb44f72bafa40e2d05f
+
+amap:
+  amapKey: 08ed5e304e8a5ae52beb2831b5a1302e

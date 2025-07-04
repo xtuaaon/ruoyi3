@@ -1,52 +1,54 @@
 package com.ruoyi.common.core.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.util.Date;
 
+@TableName("wx_master")
 public class WXMaster {
-    private String openId;
-    private String nickName;
-    private String avatarUrl;
+    @JsonSerialize(using = ToStringSerializer.class)
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+    private Long userId;
+    private String userName;
     private String phone;
-    private boolean status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date lastLoginTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
-    private String tokenKey;
-    // 位置相关属性
-    private Double latitude;     // 纬度
     private Double longitude;    // 经度
-    private String locationHash; // GeoHash编码，用于快速地理查询
+    private Double latitude;     // 纬度
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date locationUpdateTime; // 位置更新时间
+    private double rating;       //评分
+    private String specialty;    //专长
+    private int serviceCount;    //服务单数
     private boolean onlineStatus;// 在线状态
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
-    public String getOpenId() {
-        return openId;
+    public Long getId() {
+        return id;
     }
 
-    public void setOpenId(String openId) {
-        this.openId = openId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getNickName() {
-        return nickName;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPhone() {
@@ -55,46 +57,6 @@ public class WXMaster {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public Date getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(Date lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getTokenKey() {
-        return tokenKey;
-    }
-
-    public void setTokenKey(String tokenKey) {
-        this.tokenKey = tokenKey;
     }
 
     public Double getLatitude() {
@@ -113,14 +75,6 @@ public class WXMaster {
         this.longitude = longitude;
     }
 
-    public String getLocationHash() {
-        return locationHash;
-    }
-
-    public void setLocationHash(String locationHash) {
-        this.locationHash = locationHash;
-    }
-
     public Date getLocationUpdateTime() {
         return locationUpdateTime;
     }
@@ -129,11 +83,43 @@ public class WXMaster {
         this.locationUpdateTime = locationUpdateTime;
     }
 
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
+    }
+
+    public int getServiceCount() {
+        return serviceCount;
+    }
+
+    public void setServiceCount(int serviceCount) {
+        this.serviceCount = serviceCount;
+    }
+
     public boolean isOnlineStatus() {
         return onlineStatus;
     }
 
     public void setOnlineStatus(boolean onlineStatus) {
         this.onlineStatus = onlineStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

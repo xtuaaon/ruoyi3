@@ -5,20 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 public class addAddressInputDto {
-    private int order;
     private String addressName;
     private String detailAddress;
     private String location;
     private String contactName;
     private String contactPhone;
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
 
     public String getAddressName() {
         return addressName;

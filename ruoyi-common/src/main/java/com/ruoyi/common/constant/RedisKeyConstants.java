@@ -5,4 +5,6 @@ public class RedisKeyConstants {
     public static final String PENDING_ORDER_ZSET = "order:set:pending:";
     public static final String ORDER_STREAM_KEY = "order:stream:";
     public static final String ACCEPTED_ORDER_PREFIX = "order:set:accept:user";
+    public static final String Master_Location_GEO = "master:locations";
+    public static final String Master_Info_Hash = "master:Info:";
 }

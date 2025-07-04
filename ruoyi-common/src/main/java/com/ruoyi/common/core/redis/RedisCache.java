@@ -6,11 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 /**
@@ -143,6 +150,24 @@ public class RedisCache
     }
 
     /**
+     * 缓存List数据并设置过期时间
+     *
+     * @param key 缓存的键值
+     * @param dataList 待缓存的List数据
+     * @param timeout 过期时间
+     * @param timeUnit 时间单位
+     * @return 缓存的对象数量
+     */
+    public <T> long setCacheList(final String key, final List<T> dataList, long timeout, TimeUnit timeUnit)
+    {
+        Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
+        if (timeout > 0) {
+            redisTemplate.expire(key, timeout, timeUnit);
+        }
+        return count == null ? 0 : count;
+    }
+
+    /**
      * 获得缓存的list对象
      *
      * @param key 缓存的键值
@@ -264,5 +289,41 @@ public class RedisCache
     public Collection<String> keys(final String pattern)
     {
         return redisTemplate.keys(pattern);
+    }
+
+    /**
+     * 缓存GEO
+     *
+     * @param key 键
+     * @param location 位置
+     * @param member 成员
+     */
+    public void setCacheGEO(final String key, final Point location, final String member){
+        redisTemplate.opsForGeo().add(key, location, member);
+    }
+
+    /**
+     * 获得GEO对象列表
+     * @param key 键
+     * @param circle 电子围栏
+     * @param args 查询条件
+     * @return 对象列表
+     */
+    public GeoResults<RedisGeoCommands.GeoLocation<String>> getCacheGEO(final String key, final Circle circle, final RedisGeoCommands.GeoRadiusCommandArgs args){
+        return redisTemplate.opsForGeo().radius(key, circle, args);
+    }
+
+    /**
+     * 执行Redis Lua脚本（字符串脚本版本）
+     *
+     * @param scriptText Lua脚本文本
+     * @param returnType 返回类型Class
+     * @param keys 键列表
+     * @param <T> 返回类型
+     * @return 脚本执行结果
+     */
+    public <T> T executeLua(String scriptText, Class<T> returnType, List<String> keys) {
+        DefaultRedisScript<T> script = new DefaultRedisScript<>(scriptText, returnType);
+        return (T) redisTemplate.execute(script, keys);
     }
 }

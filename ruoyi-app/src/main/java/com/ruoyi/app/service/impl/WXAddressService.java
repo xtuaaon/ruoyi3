@@ -1,20 +1,26 @@
 package com.ruoyi.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.app.dto.inputdto.wxadress.addAddressInputDto;
+import com.ruoyi.app.dto.inputdto.wxadress.deleteAddressInputDto;
+import com.ruoyi.app.dto.inputdto.wxadress.updateAddressInputDto;
 import com.ruoyi.app.mapper.WXAddressMapper;
 import com.ruoyi.app.service.IWXAddressService;
 import com.ruoyi.common.core.domain.entity.WXAddress;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.common.utils.snowflakeId.SnowflakeIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.stereotype.Service;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> implements IWXAddressService {
 
     private static final Logger log = LoggerFactory.getLogger(WXAddressService.class);
@@ -23,7 +29,7 @@ public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> i
     private WXAddressMapper wxaddressMapper;
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisCache redisCache;
 
     public List<WXAddress> getAddressList(long userId){
 
@@ -32,7 +38,7 @@ public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> i
 
         try {
             // 2. 先从Redis获取缓存数据
-            List<WXAddress> cachedList = (List<WXAddress>) redisTemplate.opsForValue().get(cacheKey);
+            List<WXAddress> cachedList =  redisCache.getCacheList(cacheKey);
 
             if (cachedList != null && !cachedList.isEmpty()) {
                 // 缓存命中，直接返回
@@ -43,14 +49,16 @@ public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> i
             log.debug("Redis缓存未命中，从数据库获取用户{}的地址列表", userId);
 
             LambdaQueryWrapper<WXAddress> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(WXAddress::getCreator, userId)
-                    .orderByDesc(WXAddress::getOrder);
+            queryWrapper.select(WXAddress::getId, WXAddress::getAddressName, WXAddress::getDetailAddress,
+                            WXAddress::getLocation, WXAddress::getContactName, WXAddress::getContactPhone)
+                    .eq(WXAddress::getCreator, userId)
+                    .orderByDesc(WXAddress::getUpdateTime);
             List<WXAddress> addressList = baseMapper.selectList(queryWrapper);
 
             // 4. 如果查询到数据，存入Redis缓存
             if (addressList != null && !addressList.isEmpty()) {
                 // 设置缓存，过期时间为2小时
-                redisTemplate.opsForValue().set(cacheKey, addressList, 2, TimeUnit.HOURS);
+                redisCache.setCacheList(cacheKey, addressList, 2, TimeUnit.HOURS);
                 log.debug("用户{}的地址列表已缓存到Redis", userId);
             }
             return addressList;
@@ -60,34 +68,48 @@ public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> i
         }
     }
 
-    public Map<String, Object> insertAddress(WXAddress address){
-        Map<String, Object> result = new HashMap<>();
-        try {
-            int count = baseMapper.insert(address);
-            clearAddressListCache(address.getCreator());
-            result.put("message", "success");
-            return result;
-        }
-        catch (Exception e) {
-            result.put("message", "新增地址失败");
-            log.error("新增地址发生异常: {}",address,e);
-            return result;
-        }
+    public int insertAddress(addAddressInputDto request){
+        WXAddress address = new WXAddress();
+        BeanUtils.copyProperties(request, address);
+        address.setId(SnowflakeIdUtils.getSnowflakeId());
+        address.setCreator(SecurityUtils.getUserId());
+        address.setCreateTime(new Date());
+        int count = baseMapper.insert(address);
+        clearAddressListCache(address.getCreator());
+        return count;
     }
 
-    public Map<String, Object> updateAddress(WXAddress address){
-        Map<String, Object> result = new HashMap<>();
-        try {
-            int count = baseMapper.updateById(address);
-            clearAddressListCache(address.getCreator());
-            result.put("message", "success");
-            return result;
+    public int deleteAddress(deleteAddressInputDto request){
+        int count = baseMapper.deleteById(request.getId());
+        clearAddressListCache(SecurityUtils.getUserId());
+        return count;
+    }
+
+    public int updateAddress(updateAddressInputDto request){
+        LambdaUpdateChainWrapper<WXAddress> updateChainWrapper = new LambdaUpdateChainWrapper<>(baseMapper)
+                .eq(WXAddress::getId, request.getId());
+        if (updateChainWrapper == null) {
+            return 0; // 记录不存在
         }
-        catch (Exception e) {
-            result.put("message", "修改地址失败");
-            log.error("修改地址发生异常: {}",address,e);
-            return result;
+        if (request.getAddressName() != null) {
+            updateChainWrapper.set(WXAddress::getAddressName, request.getAddressName());
         }
+        if (request.getDetailAddress() != null) {
+            updateChainWrapper.set(WXAddress::getDetailAddress, request.getDetailAddress());
+        }
+        if (request.getLocation() != null) {
+            updateChainWrapper.set(WXAddress::getLocation, request.getLocation());
+        }
+        if (request.getContactName() != null) {
+            updateChainWrapper.set(WXAddress::getContactName, request.getContactName());
+        }
+        if (request.getContactPhone() != null) {
+            updateChainWrapper.set(WXAddress::getContactPhone, request.getContactPhone());
+        }
+        updateChainWrapper.set(WXAddress::getUpdateTime, new Date());
+        int count =  updateChainWrapper.update() ? 1: 0;
+        clearAddressListCache(SecurityUtils.getUserId());
+        return count;
     }
 
     /**
@@ -97,7 +119,7 @@ public class WXAddressService  extends ServiceImpl<WXAddressMapper, WXAddress> i
      */
     private void clearAddressListCache(long userId) {
         String cacheKey = "user:address:list:" + userId;
-        redisTemplate.delete(cacheKey);
+        redisCache.deleteObject(cacheKey);
         log.debug("清除用户{}的地址列表缓存", userId);
     }
 }

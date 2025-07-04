@@ -1,7 +1,7 @@
 package com.ruoyi.app.dto.inputdto.wxadress;
 
 public class updateAddressInputDto {
-    private long Id;
+    private long id;
     private String addressName;
     private String detailAddress;
     private String location;
@@ -9,11 +9,11 @@ public class updateAddressInputDto {
     private String contactPhone;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getAddressName() {
